@@ -45,7 +45,7 @@ function applyCors(req, res) {
   return false;
 }
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   // Aplicar CORS
   if (applyCors(req, res)) return;
 
