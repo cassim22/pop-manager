@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox'
 import { Activity, Plus, Search, Clock, User, MapPin, CheckCircle, AlertCircle, Calendar, Download, Trash2, Edit } from 'lucide-react'
 import { useAtividades, usePOPs, useTecnicos, useCreateAtividade } from '@/hooks/useAPI'
-import { Atividade, TipoAtividade, StatusAtividade } from '@/types/entities'
+import { Atividade } from '@/types/entities'
 import { formatDate } from '@/lib/utils'
 
 // SmartSearchSelect Component
@@ -135,7 +135,18 @@ const Activities: React.FC = () => {
         scheduled_date: new Date(formData.data_agendada)
       }
       
-      await createAtividade.mutateAsync(activityData)
+      const fullActivityData = {
+        pop_id: activityData.pop_id.toString(),
+        pop_nome: '',
+        tecnicos_ids: [],
+        tecnicos_nomes: [],
+        tipo_atividade: activityData.type as any,
+        descricao: activityData.description,
+        status: activityData.status as any,
+        prioridade: activityData.priority as any,
+        data_agendada: activityData.scheduled_date
+      }
+      await createAtividade.mutateAsync(fullActivityData)
       
       // Reset form
       setFormData({

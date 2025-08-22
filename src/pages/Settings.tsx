@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Save, RefreshCw, User, Bell, Shield, Database, Mail, Globe, Clock } from 'lucide-react'
 import { useUpdateUserProfile } from '@/hooks/useAPI'
-import { toast } from 'sonner'
+
 
 const Settings: React.FC = () => {
   const [settings, setSettings] = useState({

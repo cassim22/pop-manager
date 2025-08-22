@@ -114,7 +114,21 @@ const POPs: React.FC = () => {
         status: 'active'
       }
       
-      await createPOP.mutateAsync(popData)
+      const fullPopData = {
+        nome: popData.name,
+        logradouro: popData.address,
+        cidade: '',
+        estado: '',
+        cep: popData.code,
+        tipo: 'primario' as any,
+        status: popData.status as any,
+        quantidade_clientes: 0,
+        fotos_galeria: [],
+        racks: [],
+        backup_ativo: false,
+        frequencia_manutencao: 'nao_aplicavel' as any
+      }
+      await createPOP.mutateAsync(fullPopData)
       
       setIsFormOpen(false)
       // Reset form
