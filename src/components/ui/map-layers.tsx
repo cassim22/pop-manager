@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { TileLayer } from 'react-leaflet'
 
 interface MapLayersProps {

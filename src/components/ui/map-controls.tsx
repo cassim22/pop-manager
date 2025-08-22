@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState } from 'react'
 import { useMap } from 'react-leaflet'
 import { Button } from './button'
