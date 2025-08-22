@@ -1,0 +1,510 @@
+ ESTRUTURA DE ENTIDADES
+1. POP (Pontos de Presença)
+{
+  "nome": "string (obrigatório)",
+  "cep": "string",
+  "logradouro": "string (obrigatório)",
+  "numero": "string",
+  "bairro": "string",
+  "cidade": "string (obrigatório)",
+  "estado": "string (obrigatório)",
+  "coordenadas": {
+    "lat": "number",
+    "lng": "number"
+  },
+  "tipo": "enum [primario, secundario] (obrigatório)",
+  "status": "enum [operacional, manutencao, critico, desmobilizacao, desmobilizado]",
+  "regiao": "string",
+  "quantidade_clientes": "number (default: 0)",
+  "foto_principal": "string (URL)",
+  "fotos_galeria": "array de strings (URLs)",
+  "numero_conta_uc": "string",
+  "concessionaria_energia": "enum [CEMIG, CPFL, Light, etc.]",
+  "numero_medidor": "string",
+  "racks": "array de objetos",
+  "temperatura": "number",
+  "backup_ativo": "boolean (default: true)",
+  "frequencia_manutencao": "enum [nao_aplicavel, mensal, trimestral]"
+}
+2. Técnico (Equipe)
+{
+  "nome": "string (obrigatório)",
+  "email": "string/email (obrigatório)",
+  "telefone": "string",
+  "cargo": "enum [tecnico, supervisor, analista, especialista, coordenador, gerente]",
+  "status": "enum [disponivel, em_atendimento, ferias, licenca]",
+  "especializacao": "array enum [rede, energia, climatizacao, seguranca, backbone]",
+  "regiao_atuacao": "string",
+  "nivel_acesso": "enum [basico, intermediario, avancado, total]",
+  "data_admissao": "date",
+  "avatar": "string (URL)"
+}
+3. Atividade
+{
+  "numero_os": "string",
+  "id_glpi": "string (para integração)",
+  "pop_id": "string (referência)",
+  "pop_nome": "string (cache)",
+  "gerador_id": "string (referência)",
+  "gerador_nome": "string (cache)",
+  "tecnicos_ids": "array de strings",
+  "tecnicos_nomes": "array de strings (cache)",
+  "tipo_atividade": "enum [manutencao_ar_condicionado, limpeza_pop, etc.]",
+  "descricao": "string (obrigatório)",
+  "status": "enum [pendente, em_andamento, concluida, cancelada]",
+  "prioridade": "enum [baixa, media, alta, critica]",
+  "data_agendada": "date (obrigatório)",
+  "data_conclusao": "date",
+  "checklist": "object",
+  "observacoes": "string"
+}
+4. Gerador
+{
+  "nome": "string (obrigatório)",
+  "cidade": "string (obrigatório)",
+  "pop_id": "string (referência)",
+  "pop_nome": "string (cache)",
+  "modelo": "string",
+  "fabricante": "string",
+  "potencia_kva": "number",
+  "ano": "number",
+  "numero_serie": "string",
+  "tipo_combustivel": "enum [diesel, gasolina, gas, etanol]",
+  "capacidade_tanque": "number (litros)",
+  "consumo_medio_lh": "number",
+  "foto_url": "string",
+  "status": "enum [ativo, manutencao, inativo]",
+  "ultima_manutencao": "date",
+  "proxima_manutencao": "date",
+  "frequencia_manutencao": "enum [nao_aplicavel, trimestral, semestral]",
+  "observacoes": "string"
+}
+5. Manutenção (Checklists)
+{
+  "titulo": "string (obrigatório)",
+  "tipo_ativo": "enum [POP, Gerador] (obrigatório)",
+  "ativo_id": "string (obrigatório)",
+  "ativo_nome": "string (cache)",
+  "status": "enum [agendada, em_andamento, concluida, atrasada]",
+  "data_agendada": "date (obrigatório)",
+  "data_conclusao": "date",
+  "frequencia": "enum [unica, mensal, trimestral, semestral]",
+  "checklist": "array de tarefas",
+  "observacoes": "string",
+  "tecnico_responsavel_id": "string",
+  "fotos_gerais_url": "array de strings",
+  "atividade_relacionada_id": "string"
+}
+6. ChecklistTemplate (Modelos)
+{
+  "nome": "string (obrigatório)",
+  "descricao": "string",
+  "itens": "array de objetos de tarefas (obrigatório)"
+}
+7. Abastecimento
+{
+  "gerador_id": "string (obrigatório)",
+  "gerador_nome": "string (cache)",
+  "data_abastecimento": "date (obrigatório)",
+  "quantidade_litros": "number (obrigatório)",
+  "valor_total": "number (obrigatório)",
+  "valor_por_litro": "number",
+  "tipo_combustivel": "enum [diesel, gasolina, gas, etanol]",
+  "fornecedor": "string",
+  "numero_nf": "string",
+  "tecnico_responsavel_id": "string",
+  "tecnico_responsavel_nome": "string",
+  "hodometro_atual": "number",
+  "nivel_tanque_antes": "enum [vazio, baixo, medio, alto, cheio]",
+  "nivel_tanque_depois": "enum [vazio, baixo, medio, alto, cheio]",
+  "observacoes": "string",
+  "foto_nota_fiscal": "string (URL)",
+  "foto_bomba": "string (URL)"
+}
+8. User (Usuários)
+{
+  "role": "enum [admin, supervisor, tecnico] (default: admin)",
+  "dashboard_config": {
+    "widgets": "array de strings (ordem dos widgets)"
+  }
+}
+📱 PÁGINAS E FUNCIONALIDADES DETALHADAS
+1. DASHBOARD (Página Principal)
+Componentes do Dashboard:
+a) Smart Actions Panel
+
+Funcionalidade: Sistema de IA que analisa dados e sugere ações
+Algoritmos:
+Detecta POPs críticos sem atividades corretivas
+Identifica técnicos em férias com atividades pendentes
+Sugere manutenções preventivas baseadas em tempo
+Identifica POPs com muitas ocorrências
+Saídas: Cartões de ação com links diretos para resolução
+b) Quick Actions (Ações Rápidas)
+
+Botões: Novo POP, Nova Atividade, Agendar Checklist, Novo Colaborador, Novo Gerador
+Função: Acesso rápido às funcionalidades mais usadas
+c) Main Stats (Estatísticas Principais)
+
+Métricas:
+POPs Operacionais vs Total
+Atividades Pendentes vs Total
+Técnicos Disponíveis vs Total
+POPs Críticos (alertas)
+Visual: Cards com gradientes coloridos e ícones
+d) Network Overview (Visão da Rede)
+
+Gráfico: Barra mostrando status dos POPs
+Dados: Total de racks, geradores ativos
+Biblioteca: Recharts para visualização
+e) System Health (Saúde do Sistema)
+
+Monitoramento:
+Uso do banco de dados (POPs, Atividades, Técnicos)
+Estimativa de armazenamento (fotos)
+Limites e capacidade
+Alertas: Barras de progresso com códigos de cor
+f) Recent Activities (Atividades Recentes)
+
+Lista: 8 atividades mais recentes
+Info: Status, prioridade, POP associado
+Interação: Link para página completa
+g) Maintenance Alerts (Alertas de Manutenção)
+
+Função: 5 próximas manutenções agendadas
+Ordenação: Por data mais próxima
+Link: Acesso direto ao checklist
+h) Vacation Alerts (Alertas de Férias)
+
+Exibição: Técnicos em férias/licença
+Info: Período, data de retorno
+Condicional: Só aparece quando há técnicos ausentes
+i) Map Summary (Resumo do Mapa)
+
+Mapa: React Leaflet com marcadores coloridos
+Cores: Verde (operacional), Amarelo (manutenção), Vermelho (crítico)
+Interação: Tooltip com informações do POP
+Personalização do Dashboard:
+Widget Ordering: Usuário pode reordenar widgets
+Widget Toggle: Ligar/desligar widgets específicos
+Persistência: Configurações salvas no perfil do usuário
+2. PÁGINA DE POPs
+Funcionalidades de Listagem:
+Visualização Dupla: Tabela (desktop) e Cards (mobile)
+Busca Inteligente: Nome, endereço, cidade, região, equipamentos
+Filtros Avançados:
+Status: Operacional, Manutenção, Crítico, Desmobilização, Desmobilizado
+Tipo: Primário, Secundário
+Região: Dropdown dinâmico baseado nos dados
+Informações Exibidas:
+Básicas: Nome, endereço completo, cidade/região
+Operacionais: Status, tipo, quantidade de clientes
+Infraestrutura: Número de racks, concessionária de energia
+Backup: Indicador de backup ativo
+Ações Disponíveis:
+Criar: Formulário completo de cadastro
+Editar: Formulário de edição com dados pré-preenchidos
+Excluir: Confirmação obrigatória
+Visualizar: Modal com detalhes completos
+Formulário de POP:
+Seções Organizadas:
+Informações Básicas
+Endereço Completo
+Coordenadas (opcional)
+Energia e Infraestrutura
+Racks e Equipamentos
+Fotos (principal + galeria)
+Validações: Campos obrigatórios, formatos válidos
+Upload: Sistema de upload múltiplo para fotos
+3. PÁGINA DE ATIVIDADES
+Funcionalidades Avançadas:
+a) Sistema de Importação GLPI
+
+Formatos: PDF, CSV
+Processamento: IA extrai dados estruturados
+Mapeamento:
+ID GLPI → ID da atividade
+Requerente → Técnico responsável (busca inteligente)
+Localização → POP (matching automático)
+Título → Tipo de atividade (classificação automática)
+Prevenção: Sistema anti-duplicação baseado em ID GLPI
+Logs: Histórico completo da importação
+b) Gestão de Atividades
+
+Tabs Organizadas: Ativas (Pendente + Em Andamento) / Finalizadas
+Busca Multicampo: ID GLPI, descrição, POP, técnicos, tipo
+Seleção em Massa: Checkbox para operações bulk
+Status Workflow: Pendente → Em Andamento → Concluída/Cancelada
+c) Exportação de Dados
+
+Excel/CSV: Dados estruturados para análise
+PDF: Relatório formatado para impressão
+Filtros: Exporta apenas dados filtrados/selecionados
+Formulário de Atividades:
+SmartSearchSelect: Busca inteligente para POPs/Geradores
+Multi-Select: Seleção de múltiplos técnicos
+Classificação: Tipo de atividade com 13 opções
+Agendamento: Data/hora picker
+Prioridade: Visual com cores diferenciadas
+4. PÁGINA DE EQUIPE
+Gestão de Colaboradores:
+Cards Visuais: Avatar, cargo, status, especialização
+Filtros: Cargo, status de disponibilidade
+Busca: Nome, email, telefone, região, especialização
+Status Tracking: Disponível, Em Atendimento, Férias, Licença
+Informações Detalhadas:
+Pessoais: Nome, email, telefone, avatar
+Profissionais: Cargo, data de admissão, região de atuação
+Técnicas: Especializações (rede, energia, climatização, etc.)
+Acesso: Níveis de permissão no sistema
+Gestão de Status:
+Disponível: Verde - Pode receber atividades
+Em Atendimento: Azul - Ocupado com atividades
+Férias: Amarelo - Ausente temporariamente
+Licença: Cinza - Ausente por motivos médicos/pessoais
+5. MAPA INTERATIVO
+Recursos de Visualização:
+Mapa Base: OpenStreetMap através do React Leaflet
+Marcadores Dinâmicos: Cores baseadas no status do POP
+Clustering: Agrupamento automático em zoom baixo
+Tooltips: Informações básicas no hover
+Popup Detalhado: Card completo no clique
+Funcionalidades Laterais:
+Lista Filtrada: Sidebar com POPs filtrados
+Busca Geográfica: Por nome, cidade, região, endereço
+Filtros Visuais: Status e tipo de POP
+Navegação: Clique na lista centraliza no mapa
+Detalhes do POP:
+Overlay Fixo: Card de detalhes no canto superior direito
+Informações: Endereço, status, clientes, infraestrutura
+Ações: Links para edição e outras funcionalidades
+6. SISTEMA DE CHECKLISTS/MANUTENÇÕES
+Gestão de Manutenções:
+Tipos de Ativo: POP ou Gerador
+Frequências: única, mensal, trimestral, semestral
+Status Workflow: Agendada → Em Andamento → Concluída → Atrasada
+Associação: Link automático com atividades geradoras
+Execução de Checklists:
+Tipos de Item:
+Tarefa: Checkbox simples
+Texto Livre: Campo de observação
+Número: Input numérico
+Múltipla Escolha: Radio buttons
+Sim/Não: Boolean
+Upload de Fotos: Por item individual + fotos gerais
+Observações: Campo de texto por item
+Progresso: Barra de conclusão em tempo real
+Templates de Checklist:
+Reutilização: Modelos padrão para tipos de manutenção
+Customização: Editor completo de templates
+Aplicação: Um clique para aplicar template
+7. GESTÃO DE GERADORES
+Monitoramento Completo:
+Informações Técnicas: Modelo, fabricante, potência, combustível
+Status Operacional: Ativo, Manutenção, Inativo
+Manutenção: Última realizada, próxima agendada, frequência
+Localização: POP associado, cidade
+Integração com Abastecimentos:
+Botão Rápido: "Registrar Abastecimento" em cada card
+Pré-preenchimento: Dados do gerador automaticamente carregados
+Histórico: Todos os abastecimentos do gerador
+Recursos Visuais:
+Fotos: Imagem do gerador em cada card
+Status Colors: Verde/Amarelo/Vermelho para status
+Informações Técnicas: Potência, tipo de combustível, capacidade
+8. CONTROLE DE ABASTECIMENTOS
+Registro Detalhado:
+Dados Básicos: Data, quantidade, valor total/por litro
+Operacionais: Nível do tanque (antes/depois), hodômetro
+Documentação: Nota fiscal, fornecedor
+Evidências: Fotos da nota fiscal e bomba de combustível
+Responsável: Técnico que realizou o abastecimento
+Analytics Integrado:
+Consumo: Cálculos automáticos de eficiência
+Custos: Tracking de gastos por gerador
+Relatórios: Exportação para análise financeira
+9. GALERIA DE FOTOS RENOVADA
+Recursos Visuais Avançados:
+a) Grid Uniforme
+
+Dimensões: Todas as fotos em 240px de altura
+Crop Inteligente: object-cover mantém proporção
+Responsive: 4 colunas (desktop), 3 (tablet), 2 (mobile)
+Loading: Placeholder elegante durante carregamento
+b) Informações Ricas por POP
+
+Foto Principal: Destaque visual principal
+Status Badge: Cor e ícone indicativo
+Localização: Cidade, região, endereço
+Contador: Total de imagens disponíveis
+Clientes: Número de conexões atendidas
+Tipo: Primário/Secundário
+Backup: Indicador de backup ativo
+c) Sistema de Busca e Filtros
+
+Busca Inteligente: Nome, cidade, região, endereço completo
+Filtros: Status (operacional, manutenção, crítico) e tipo
+Resultados Dinâmicos: Contador atualizado em tempo real
+Reset Rápido: Limpar filtros com um clique
+Modal de Visualização Profissional:
+a) Recursos de Zoom
+
+Zoom com Clique: Toggle entre tamanho normal e ampliado (150%)
+Zoom Responsivo: Funciona em desktop e mobile
+Indicador Visual: Cursor muda para indicar zoom disponível
+Transições Suaves: Animação fluida de 300ms
+b) Navegação Avançada
+
+Setas Laterais: Navegação entre imagens
+Indicadores: Posição atual (X/Y total)
+Keyboard Support: Setas do teclado funcionam
+Mobile Dots: Pontos de navegação no mobile
+c) Controles de Ação
+
+Download: Link direto para salvar imagem
+Exclusão: Remoção com confirmação
+Zoom Toggle: Botão dedicado para zoom
+Fechar: ESC ou botão X
+d) Categorização de Imagens
+
+Foto Principal: Imagem de destaque
+Galeria: Fotos adicionais do POP
+Equipamentos: Fotos específicas de equipamentos nos racks
+Labels: Identificação clara do tipo de cada foto
+Experiência de Usuário
+Carregamento Otimizado: Lazy loading das imagens
+Fallback Inteligente: Imagem padrão para URLs quebradas
+Performance: Grid virtualizado para muitas imagens
+Acessibilidade: Alt text e navegação por teclado
+10. SISTEMA DE RELATÓRIOS
+Central de Relatórios:
+Operacional: Atividades diárias, status da rede
+Infraestrutura: Análise de POPs, geradores, capacidade
+Desempenho: Produtividade da equipe, métricas
+Recursos de Exportação:
+PDF: Relatórios formatados para impressão
+Excel/CSV: Dados para análise
+Filtros: Por período, região, equipe, status
+11. ANÁLISE DE CAPACIDADE
+Monitoramento de Crescimento:
+Clientes por POP: Distribuição geográfica
+Utilização: Percentual de capacidade usada
+Projeções: Crescimento baseado em histórico
+Alertas: POPs próximos da capacidade máxima
+12. AGENDA INTEGRADA
+Visualização de Eventos:
+Calendário: Manutenções, atividades, férias
+Cores: Diferenciação por tipo de evento
+Filtros: Por técnico, tipo, status
+Sincronização: Com Google Calendar (futuro)
+🔧 RECURSOS TÉCNICOS AVANÇADOS
+1. SmartSearchSelect Component
+Busca Inteligente: Múltiplos campos simultaneamente
+Highlight: Destaque dos termos encontrados
+Performance: Debounce de 300ms
+Limit: Máximo 10 resultados para performance
+Types: Suporta POPs e Geradores com campos específicos
+2. Sistema de Upload
+Múltiplos Arquivos: Upload simultâneo
+Formatos: JPG, PNG, PDF
+Preview: Miniatura antes do upload
+Progress: Barra de progresso por arquivo
+Error Handling: Tratamento de erros específicos
+3. Integração GLPI
+Formatos Suportados: PDF e CSV
+IA Processing: ExtractDataFromUploadedFile
+Mapeamento Inteligente: Campos automaticamente associados
+Duplicate Prevention: Sistema anti-duplicação por ID
+Error Recovery: 5 tentativas de processamento
+4. Responsividade Completa
+Breakpoints: Mobile (< 768px), Tablet (768-1024px), Desktop (> 1024px)
+Components: Todos os componentes adaptam automaticamente
+Navigation: Menu lateral (desktop) / Hambúrguer (mobile)
+Tables: Transformam em cards no mobile
+Forms: Layout adapta para telas pequenas
+5. Sistema de Estados
+Loading States: Skeletons para cada componente
+Error States: Mensagens específicas por tipo de erro
+Empty States: Interfaces para dados vazios
+Success States: Confirmações visuais de ações
+🔐 SISTEMA DE PERMISSÕES
+Configuração Atual:
+Acesso Livre: Sistema configurado para uso sem autenticação
+Permissões Totais: Todos os usuários têm acesso completo
+Futuro: Sistema preparado para implementar roles granulares
+Roles Preparados:
+Admin: Acesso total ao sistema
+Supervisor: Gestão de equipe e relatórios
+Técnico: Execução de atividades e checklists
+🎨 DESIGN SYSTEM
+Cores Principais:
+Primary: Blue-600 (#2563eb)
+Success: Green-600 (#059669)
+Warning: Amber-600 (#d97706)
+Danger: Red-600 (#dc2626)
+Neutral: Slate-600 (#475569)
+Typography:
+Font Family: System fonts (Inter, SF Pro, Roboto)
+Sizes: text-xs a text-4xl
+Weights: font-normal, font-medium, font-semibold, font-bold
+Spacing System:
+Scale: 4px base (0.25rem)
+Common: p-2, p-4, p-6, p-8, p-12
+Gaps: gap-2, gap-4, gap-6, gap-8
+Components Shadcn/ui:
+Forms: Input, Select, Textarea, Checkbox, Radio
+Feedback: Alert, Toast, Dialog, Progress
+Layout: Card, Separator, Badge, Button
+Navigation: Dropdown, Tabs, Pagination
+📊 MÉTRICAS E ANALYTICS
+KPIs Monitorados:
+Operacionais: POPs ativos, atividades concluídas, SLA
+Equipe: Produtividade, disponibilidade, especialização
+Infraestrutura: Capacidade, crescimento, investimentos
+Financeiro: Custos de manutenção, ROI, budget
+Dashboards Específicos:
+Executivo: Visão geral, trending, alertas críticos
+Operacional: Dia a dia, tarefas, urgências
+Técnico: Detalhes de infraestrutura, especificações
+🔄 INTEGRAÇÕES
+Atuais:
+GLPI: Importação de chamados via PDF/CSV
+Maps: OpenStreetMap para geolocalização
+Files: Base44 file storage para fotos/documentos
+Futuras (Preparadas):
+ERP: Integração financeira e de recursos
+Monitoring: SNMP, PRTG, Zabbix
+Mobile App: PWA ou app nativo
+IoT: Sensores de temperatura, energia
+🚀 PERFORMANCE E OTIMIZAÇÕES
+Frontend:
+Code Splitting: Lazy loading de páginas
+Image Optimization: Compressed, lazy loading
+Bundle Size: Otimizado com tree shaking
+Caching: Browser cache estratégico
+Database:
+Indexing: Campos de busca indexados
+Caching: Dados frequentes em cache
+Pagination: Listagens paginadas
+Batch Operations: Operações em lote otimizadas
+📱 MOBILE EXPERIENCE
+Responsive Design:
+Mobile First: Desenvolvimento mobile-first
+Touch Optimized: Botões e áreas de toque adequadas
+Offline Capable: PWA com cache offline
+Native Feel: Transições e animações nativas
+Specific Features:
+Camera Integration: Upload direto da câmera
+GPS Location: Coordenadas automáticas
+Push Notifications: Alertas importantes
+App Install: Install prompt para PWA
+🔮 ROADMAP FUTURO
+Próximas Versões:
+Sistema de Notificações: Push, email, SMS
+Relatórios Avançados: BI, analytics, forecasting
+Mobile App: Native iOS/Android
+IoT Integration: Sensores, automação
+AI/ML: Predictive maintenance, optimization
+API Completa: REST API para integrações
+Multi-tenant: Suporte a múltiplas empresas
+Audit Log: Rastreamento completo de mudanças
